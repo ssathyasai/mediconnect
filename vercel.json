@@ -1,0 +1,55 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "backend/api/**/*.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "frontend/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/auth/login",
+      "destination": "/backend/api/auth/login.js"
+    },
+    {
+      "source": "/api/auth/signup",
+      "destination": "/backend/api/auth/signup.js"
+    },
+    {
+      "source": "/api/auth/me",
+      "destination": "/backend/api/auth/me.js"
+    },
+    {
+      "source": "/api/medications",
+      "destination": "/backend/api/medications/index.js"
+    },
+    {
+      "source": "/api/medications/:id",
+      "destination": "/backend/api/medications/[id].js?id=:id"
+    },
+    {
+      "source": "/api/appointments",
+      "destination": "/backend/api/appointments/index.js"
+    },
+    {
+      "source": "/api/appointments/:id",
+      "destination": "/backend/api/appointments/[id].js?id=:id"
+    },
+    {
+      "source": "/api/health",
+      "destination": "/backend/api/health/index.js"
+    },
+    {
+      "source": "/api/health/:id",
+      "destination": "/backend/api/health/[id].js?id=:id"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/frontend/$1"
+    }
+  ]
+}
