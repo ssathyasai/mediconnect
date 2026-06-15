@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediConnect – Emergency Services</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+  <style>
+    body {
+      background-color: #b6fffa;
+    }
+
+    #nav {
+      background-color: #04364a !important;
+    }
+
+    h1 {
+      font-family: "Cabin", sans-serif;
+      text-align: center;
+      color: #04364a;
+    }
+
+    h3 {
+      font-family: 'Anton', sans-serif;
+      font-size: 2.5rem;
+      text-align: center;
+      font-weight: 800;
+      color: #363062;
+    }
+    
+    table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        img {
+            max-width: 40px;
+            max-height: 30px;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+            cursor: pointer;
+        }
+        #firstAidTips {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .firstAidTip {
+            margin-bottom: 20px;
+        }
+
+        .firstAidTip h2 {
+            color: #333;
+        }
+
+        .videoLink {
+            display: block;
+            margin-top: 10px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .videoLink:hover {
+            text-decoration: underline;
+        }
+
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Cabin:wght@600&family=Cinzel:wght@800&family=Dancing+Script&family=Gabarito&family=Inconsolata&family=Libre+Baskerville:wght@700&family=Nosifer&family=Nunito:wght@300&family=Ubuntu:wght@500&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary nav-underline" id="nav">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="../index.html" style="color: #b6fffa">MediConnect</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="../index.html" style="color: #b6fffa">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="about.html" style="color: #b6fffa">About Us</a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+                  style="color: #b6fffa">Emergency</a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="emergency.html">Emergency Services</a></li>
+                  <li><a class="dropdown-item" href="doctor.html">Find a Doctor</a></li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li><a class="dropdown-item" href="about.html">Contact Us</a></li>
+                </ul>
+              </li>
+            </ul>
+            <div class="d-flex gap-2" id="nav-auth-section">
+              <a href="login.html" class="btn btn-outline-light btn-sm px-3 py-2" style="border-radius: 8px;">Login</a>
+              <a href="signup.html" class="btn btn-success btn-sm px-3 py-2" style="border-radius: 8px;">SignUp</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+      
+<table>
+    <thead>
+        <tr>
+            <th>Country</th>
+            <th>Flag</th>
+            <th>Emergency Number</th>
+            <th>Ambulance Number</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr onclick="showMessage('United States', '911', '911')">
+            <td>United States</td>
+            <td><img src="https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/1920px-Flag_of_the_United_States.svg.png" alt="US Flag"></td>
+            <td>911</td>
+            <td>911</td>
+        </tr>
+        <tr onclick="showMessage('United Kingdom', '999', '999')">
+            <td>United Kingdom</td>
+            <td><img src="https://upload.wikimedia.org/wikipedia/en/thumb/a/ae/Flag_of_the_United_Kingdom.svg/1920px-Flag_of_the_United_Kingdom.svg.png" alt="UK Flag"></td>
+            <td>999</td>
+            <td>999</td>
+        </tr>
+        <tr onclick="showMessage('Canada', '911', '911')">
+            <td>Canada</td>
+            <td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Flag_of_Canada_%28Pantone%29.svg/2560px-Flag_of_Canada_%28Pantone%29.svg.png" alt="Canada Flag"></td>
+            <td>911</td>
+            <td>911</td>
+        </tr>
+        <tr onclick="showMessage('Germany', '112', '112')">
+            <td>Germany</td>
+            <td><img src="https://upload.wikimedia.org/wikipedia/en/thumb/b/ba/Flag_of_Germany.svg/1920px-Flag_of_Germany.svg.png" alt="Germany Flag"></td>
+            <td>112</td>
+            <td>112</td>
+        </tr>
+        <tr onclick="showMessage('India', '112', '112')">
+            <td>India</td>
+            <td><img src="https://upload.wikimedia.org/wikipedia/en/thumb/4/41/Flag_of_India.svg/1280px-Flag_of_India.svg.png" alt="India Flag"></td>
+            <td>100</td>
+            <td>108</td>
+        </tr>
+        <tr onclick="showMessage('Russia', '112', '112')">
+            <td>Russia</td>
+            <td><img src="https://upload.wikimedia.org/wikipedia/en/thumb/f/f3/Flag_of_Russia.svg/1280px-Flag_of_Russia.svg.png" alt="Russia Flag"></td>
+            <td>112</td>
+            <td>112</td>
+        </tr>
+        
+    </tbody>
+</table>
+<h1>First Aid Tips</h1>
+
+<div id="firstAidTips">
+    <div class="firstAidTip">
+        <h2>1. CPR (Cardiopulmonary Resuscitation)</h2>
+        <p>Perform chest compressions and rescue breaths if someone is unresponsive and not breathing.</p>
+        <img src="https://images.unsplash.com/photo-1622551546704-36926ae49878?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="CPR Image">
+    </div>
+
+    <div class="firstAidTip">
+        <h2>2. Choking</h2>
+        <p>If someone is choking, perform the Heimlich maneuver to clear the airway.</p>
+        <img src="https://via.placeholder.com/800x400" alt="Choking Image">
+    </div>
+
+    <div class="firstAidTip">
+        <h2>3. Burns</h2>
+        <p>For minor burns, cool the affected area with running water. For severe burns, seek medical help.</p>
+        <img src="https://via.placeholder.com/800x400" alt="Burns Image">
+    </div>
+
+
+<script>
+    function showMessage(country, emergencyNumber, ambulanceNumber) {
+        alert(`Emergency Numbers for ${country}:\nEmergency: ${emergencyNumber}\nAmbulance: ${ambulanceNumber}`);
+    }
+
+    // Navbar Auth check
+    (function() {
+      const token = localStorage.getItem('mc_token');
+      const name = localStorage.getItem('mc_name');
+      const authSection = document.getElementById('nav-auth-section');
+      if (token && name && authSection) {
+        authSection.innerHTML = `
+          <span class="text-white me-2 align-self-center fw-semibold">Hello, ${name}</span>
+          <button id="logout-btn" class="btn btn-outline-danger btn-sm px-3 py-2" style="border-radius: 8px;">Logout</button>
+        `;
+        document.getElementById('logout-btn').addEventListener('click', (e) => {
+          e.preventDefault();
+          localStorage.removeItem('mc_token');
+          localStorage.removeItem('mc_name');
+          window.location.reload();
+        });
+      }
+    })();
+</script>
+
+
+</body>
+
+</html>
+
