@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediConnect – Symptom Checker & Disease Predictor</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --primary-color: #04364a;
+      --accent-color: #17b890;
+      --warning-color: #ff5e62;
+      --bg-gradient: linear-gradient(135deg, #e0f9f8 0%, #cfdaf5 100%);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      color: #333;
+      padding-bottom: 50px;
+    }
+
+    #nav {
+      background-color: var(--primary-color) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 24px;
+      box-shadow: 0 15px 35px rgba(4, 54, 74, 0.08);
+      padding: 2.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .section-title {
+      font-weight: 800;
+      color: var(--primary-color);
+      margin-bottom: 0.5rem;
+    }
+
+    .search-container {
+      position: relative;
+    }
+
+    .search-input {
+      border: 2px solid rgba(4, 54, 74, 0.15);
+      border-radius: 14px;
+      padding: 14px 20px;
+      font-size: 1.05rem;
+      transition: all 0.25s ease;
+      background: white;
+      width: 100%;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 4px rgba(4, 54, 74, 0.1);
+      outline: none;
+    }
+
+    .autocomplete-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      z-index: 1000;
+      max-height: 250px;
+      overflow-y: auto;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .autocomplete-item {
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      font-weight: 500;
+      color: #444;
+    }
+
+    .autocomplete-item:hover {
+      background: #f4f7f6;
+      color: var(--primary-color);
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(4, 54, 74, 0.06);
+      color: var(--primary-color);
+      padding: 8px 16px;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+
+    .chip:hover {
+      background: rgba(4, 54, 74, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .chip.active-tag {
+      background: var(--primary-color);
+      color: white;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+
+    .chip.active-tag i {
+      margin-left: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+    }
+
+    .chip.active-tag i:hover {
+      opacity: 1;
+    }
+
+    .quick-select-chip {
+      background: white;
+      border: 1px solid rgba(4, 54, 74, 0.15);
+      font-size: 0.85rem;
+    }
+
+    .quick-select-chip:hover {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+
+    /* Results container */
+    .result-card {
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 18px;
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background: rgba(255, 255, 255, 0.65);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+    }
+
+    .result-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(4, 54, 74, 0.08);
+      background: rgba(255, 255, 255, 0.85);
+    }
+
+    .result-card.high-risk {
+      border-left: 6px solid var(--warning-color);
+    }
+
+    .result-card.medium-risk {
+      border-left: 6px solid #ffa600;
+    }
+
+    .result-card.low-risk {
+      border-left: 6px solid var(--accent-color);
+    }
+
+    .progress-bar-custom {
+      height: 8px;
+      border-radius: 10px;
+    }
+
+    .progress-bar-custom.high { background-color: var(--warning-color); }
+    .progress-bar-custom.medium { background-color: #ffa600; }
+    .progress-bar-custom.low { background-color: var(--accent-color); }
+    
+    .emergency-banner {
+      background: linear-gradient(135deg, #ff5e62 0%, #ff9966 100%);
+      color: white;
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 20px rgba(255, 94, 98, 0.2);
+      animation: pulseAlert 2s infinite alternate;
+    }
+
+    .emergency-banner h4 {
+      font-weight: 800;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes pulseAlert {
+      0% { box-shadow: 0 8px 20px rgba(255, 94, 98, 0.2); }
+      100% { box-shadow: 0 8px 25px rgba(255, 94, 98, 0.35); }
+    }
+
+    .symptom-tag-pill {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 50px;
+      display: inline-block;
+      margin: 2px;
+      font-weight: 600;
+    }
+
+    .symptom-tag-pill.matched {
+      background-color: rgba(23, 184, 144, 0.12);
+      color: #118063;
+    }
+
+    .symptom-tag-pill.unmatched {
+      background-color: rgba(0, 0, 0, 0.05);
+      color: #666;
+    }
+
+    .action-btn {
+      border-radius: 10px;
+      font-weight: 600;
+      padding: 8px 18px;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+    }
+
+    .action-btn-primary:hover {
+      background-color: #0b4f6c;
+      transform: translateY(-1px);
+    }
+
+    .action-btn-secondary {
+      background-color: transparent;
+      border: 2px solid rgba(4, 54, 74, 0.2);
+      color: var(--primary-color);
+    }
+
+    .action-btn-secondary:hover {
+      background-color: rgba(4, 54, 74, 0.05);
+      border-color: var(--primary-color);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg bg-body-tertiary nav-underline" id="nav">
+    <div class="container-fluid">
+      <a class="navbar-brand text-decoration-none" href="../index.html" style="color: #b6fffa; font-weight: 700;">MediConnect</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="../index.html" style="color: #b6fffa">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="about.html" style="color: #b6fffa">About Us</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+              style="color: #b6fffa">Emergency</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="emergency.html">Emergency Services</a></li>
+              <li><a class="dropdown-item" href="doctor.html">Find a Doctor</a></li>
+              <li><hr class="dropdown-divider" /></li>
+              <li><a class="dropdown-item" href="about.html">Contact Us</a></li>
+            </ul>
+          </li>
+        </ul>
+        <div class="d-flex gap-2" id="nav-auth-section">
+          <a href="login.html" class="btn btn-outline-light btn-sm px-3 py-2" style="border-radius: 8px;">Login</a>
+          <a href="signup.html" class="btn btn-success btn-sm px-3 py-2" style="border-radius: 8px;">SignUp</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="main-container">
+    <div class="glass-card">
+      <div class="text-center mb-4">
+        <div class="d-inline-block bg-info bg-opacity-10 p-3 rounded-circle mb-3">
+          <i class="bi bi-heart-pulse-fill text-info" style="font-size: 2.5rem;"></i>
+        </div>
+        <h1 class="section-title">AI-Powered Symptom Checker</h1>
+        <p class="text-muted fs-5">Identify potential causes and receive smart, personalized healthcare recommendations.</p>
+      </div>
+
+      <!-- Emergency Alert Banner (Hidden by default) -->
+      <div id="emergency-banner" class="emergency-banner" style="display: none;">
+        <div class="d-flex align-items-center gap-3">
+          <i class="bi bi-exclamation-triangle-fill" style="font-size: 2rem;"></i>
+          <div>
+            <h4 class="margin-bottom-2">Urgent Medical Attention Advised</h4>
+            <p class="mb-0">You have selected symptoms (like chest pain or shortness of breath) that could indicate a severe condition. Please contact emergency services or consult a doctor immediately.</p>
+          </div>
+        </div>
+        <div class="mt-3 text-end">
+          <a href="doctor.html" class="btn btn-light btn-sm text-danger fw-bold px-3 py-2" style="border-radius: 8px;">Find Immediate Care</a>
+        </div>
+      </div>
+
+      <!-- Search Box & Tag List -->
+      <div class="mb-4">
+        <label for="symptoms-search" class="form-label fw-bold text-dark fs-6">Search & Select Symptoms:</label>
+        <div class="search-container">
+          <input type="text" id="symptoms-search" class="search-input" placeholder="Type a symptom (e.g. fever, cough, chest pain)..." autocomplete="off">
+          <div id="suggestions-list" class="autocomplete-dropdown"></div>
+        </div>
+      </div>
+
+      <!-- Active Selected Tags -->
+      <div class="mb-4">
+        <div class="fw-semibold text-muted mb-2" id="selected-title" style="display:none;">Your Selected Symptoms:</div>
+        <div class="d-flex flex-wrap gap-2" id="selected-tags"></div>
+      </div>
+
+      <!-- Quick Select Section -->
+      <div class="mb-5">
+        <div class="fw-semibold text-dark mb-2">Common Symptoms (Click to Add):</div>
+        <div class="d-flex flex-wrap gap-2" id="quick-select-container"></div>
+      </div>
+
+      <!-- Diagnostics Output -->
+      <div class="border-top pt-4">
+        <h3 class="fw-bold mb-4 text-dark d-flex align-items-center gap-2">
+          <i class="bi bi-activity text-primary"></i> Possible Conditions
+        </h3>
+        <div id="result-info" class="text-muted mb-3">Add symptoms above to start prediction.</div>
+        <div id="predictions-container" class="d-flex flex-column gap-3"></div>
+      </div>
+
+      <!-- Medical Disclaimer -->
+      <div class="mt-5 p-3 rounded-3 bg-light border text-muted" style="font-size: 0.82rem; line-height: 1.5;">
+        <div class="fw-bold mb-1"><i class="bi bi-info-circle-fill me-1"></i> Medical Disclaimer:</div>
+        This tool is powered by a basic diagnostic algorithm and is for educational and informational purposes only. It does not provide professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare professional regarding any medical concerns.
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+
+  <script>
+    // Example diseases and symptoms database
+    const diseases = [
+      { name: "Common Cold", symptoms: ["runny nose", "sneezing", "cough"] },
+      { name: "Influenza", symptoms: ["fever", "body aches", "fatigue"] },
+      { name: "Allergies", symptoms: ["itchy eyes", "sneezing", "nasal congestion"] },
+      { name: "COVID-19", symptoms: ["fever", "cough", "shortness of breath", "loss of taste or smell"] },
+      { name: "Pneumonia", symptoms: ["high fever", "chest pain", "difficulty breathing"] },
+      { name: "Bronchitis", symptoms: ["persistent cough", "shortness of breath", "chest discomfort"] },
+      { name: "Asthma", symptoms: ["wheezing", "shortness of breath", "chest tightness"] },
+      { name: "Gastroenteritis", symptoms: ["nausea", "vomiting", "diarrhea", "abdominal pain"] },
+      { name: "Urinary Tract Infection", symptoms: ["burning sensation during urination", "frequent urination", "lower abdominal pain"] },
+      { name: "Migraine", symptoms: ["severe headache", "sensitivity to light", "nausea"] },
+      { name: "Hypertension", symptoms: ["headache", "dizziness", "chest pain"] },
+      { name: "Diabetes", symptoms: ["excessive thirst", "frequent urination", "fatigue"] },
+      { name: "Rheumatoid Arthritis", symptoms: ["joint pain", "morning stiffness", "swelling"] },
+      { name: "Lupus", symptoms: ["joint pain", "skin rash", "fatigue"] },
+      { name: "Osteoarthritis", symptoms: ["joint pain", "stiffness", "limited range of motion"] },
+      { name: "Celiac Disease", symptoms: ["abdominal pain", "bloating", "diarrhea"] },
+      { name: "Crohn's Disease", symptoms: ["abdominal pain", "diarrhea", "weight loss"] },
+      { name: "Ulcerative Colitis", symptoms: ["bloody stools", "abdominal pain", "diarrhea"] },
+      { name: "Hepatitis", symptoms: ["jaundice", "fatigue", "abdominal pain"] },
+      { name: "HIV/AIDS", symptoms: ["persistent fever", "unexplained weight loss", "fatigue"] },
+      { name: "Anemia", symptoms: ["fatigue", "weakness", "pale skin"] },
+      { name: "Epilepsy", symptoms: ["seizures", "confusion", "uncontrollable movements"] },
+      { name: "Parkinson's Disease", symptoms: ["tremors", "stiffness", "difficulty walking"] },
+      { name: "Alzheimer's Disease", symptoms: ["memory loss", "confusion", "difficulty performing familiar tasks"] },
+      { name: "Schizophrenia", symptoms: ["hallucinations", "delusions", "disorganized thinking"] },
+      { name: "Bipolar Disorder", symptoms: ["mood swings", "energy changes", "difficulty sleeping"] },
+      { name: "Depression", symptoms: ["persistent sadness", "loss of interest", "changes in appetite"] },
+      { name: "Generalized Anxiety Disorder", symptoms: ["excessive worry", "restlessness", "fatigue"] },
+      { name: "Panic Disorder", symptoms: ["sudden and intense fear", "chest pain", "shortness of breath"] },
+      { name: "Obsessive-Compulsive Disorder", symptoms: ["obsessions", "compulsions", "anxiety"] },
+      { name: "Post-Traumatic Stress Disorder", symptoms: ["flashbacks", "nightmares", "hypervigilance"] },
+      { name: "Sleep Apnea", symptoms: ["loud snoring", "pauses in breathing during sleep", "daytime sleepiness"] },
+      { name: "Insomnia", symptoms: ["difficulty falling asleep", "difficulty staying asleep", "waking up too early"] },
+      { name: "Cataracts", symptoms: ["cloudy or blurry vision", "sensitivity to light", "difficulty seeing at night"] },
+      { name: "Glaucoma", symptoms: ["gradual loss of peripheral vision", "eye pain", "blurred vision"] },
+      { name: "Macular Degeneration", symptoms: ["blurred or distorted vision", "difficulty recognizing faces", "dark spots"] },
+      { name: "Hemorrhoids", symptoms: ["anal itching", "pain or discomfort", "bleeding during bowel movements"] },
+      { name: "Gout", symptoms: ["joint pain", "swelling", "redness"] },
+      { name: "Kidney Stones", symptoms: ["severe pain in the side or back", "blood in urine", "frequent urination"] },
+      { name: "Ovarian Cancer", symptoms: ["abdominal bloating", "pelvic pain", "feeling full quickly"] },
+      { name: "Prostate Cancer", symptoms: ["frequent urination", "difficulty starting or stopping urination", "blood in urine"] },
+      { name: "Breast Cancer", symptoms: ["lump in the breast", "changes in breast size or shape", "nipple discharge"] },
+      { name: "Colon Cancer", symptoms: ["changes in bowel habits", "blood in stool", "abdominal discomfort"] },
+    ];
+
+    // High severity symptoms listing
+    const SEVERE_SYMPTOMS = [
+      "chest pain", 
+      "difficulty breathing", 
+      "shortness of breath", 
+      "seizures", 
+      "loss of taste or smell", 
+      "high fever", 
+      "sudden and intense fear",
+      "jaundice"
+    ];
+
+    // Common symptoms for quick select chips
+    const COMMON_SYMPTOMS = [
+      "fever",
+      "cough",
+      "headache",
+      "fatigue",
+      "sneezing",
+      "shortness of breath",
+      "body aches",
+      "nausea",
+      "runny nose",
+      "sore throat"
+    ];
+
+    // Extract all unique symptoms dynamically
+    const allSymptoms = Array.from(
+      new Set(diseases.flatMap(disease => disease.symptoms))
+    ).sort();
+
+    const selectedSymptoms = new Set();
+
+    // DOM Elements
+    const searchInput = document.getElementById("symptoms-search");
+    const suggestionsList = document.getElementById("suggestions-list");
+    const selectedTagsContainer = document.getElementById("selected-tags");
+    const selectedTitle = document.getElementById("selected-title");
+    const quickSelectContainer = document.getElementById("quick-select-container");
+    const predictionsContainer = document.getElementById("predictions-container");
+    const resultInfo = document.getElementById("result-info");
+    const emergencyBanner = document.getElementById("emergency-banner");
+
+    // Initialize UI
+    window.onload = function() {
+      renderQuickSelect();
+      updatePredictions();
+    };
+
+    // Render Quick Select Suggestion Chips
+    function renderQuickSelect() {
+      quickSelectContainer.innerHTML = "";
+      COMMON_SYMPTOMS.forEach(symptom => {
+        if (!selectedSymptoms.has(symptom)) {
+          const chip = document.createElement("div");
+          chip.className = "chip quick-select-chip";
+          chip.innerText = symptom;
+          chip.onclick = () => addSymptom(symptom);
+          quickSelectContainer.appendChild(chip);
+        }
+      });
+    }
+
+    // Fuzzy matching closest symptom helper
+    function findClosestSymptom(input) {
+      const query = input.trim().toLowerCase();
+      if (!query) return null;
+      
+      // 1. Exact match
+      const exact = allSymptoms.find(s => s.toLowerCase() === query);
+      if (exact) return exact;
+
+      // 2. Starts with match
+      const startsWith = allSymptoms.find(s => s.toLowerCase().startsWith(query));
+      if (startsWith) return startsWith;
+
+      // 3. Reverse substring match (e.g. typing "coughing" matches "cough")
+      const contained = allSymptoms.find(s => query.includes(s.toLowerCase()));
+      if (contained) return contained;
+
+      // 4. In-between partial match
+      const partial = allSymptoms.find(s => s.toLowerCase().includes(query));
+      if (partial) return partial;
+
+      return null;
+    }
+
+    // Add selected symptom
+    function addSymptom(symptom) {
+      if (!symptom) return;
+      selectedSymptoms.add(symptom.toLowerCase());
+      searchInput.value = "";
+      hideSuggestions();
+      renderTags();
+      renderQuickSelect();
+      updatePredictions();
+    }
+
+    // Remove selected symptom
+    function removeSymptom(symptom) {
+      selectedSymptoms.delete(symptom);
+      renderTags();
+      renderQuickSelect();
+      updatePredictions();
+    }
+
+    // Render tags representing active selected symptoms
+    function renderTags() {
+      selectedTagsContainer.innerHTML = "";
+      if (selectedSymptoms.size > 0) {
+        selectedTitle.style.display = "block";
+        selectedSymptoms.forEach(symptom => {
+          const tag = document.createElement("div");
+          tag.className = "chip active-tag";
+          tag.innerHTML = `${symptom} <i class="bi bi-x-circle-fill" onclick="removeSymptom('${symptom}')"></i>`;
+          selectedTagsContainer.appendChild(tag);
+        });
+      } else {
+        selectedTitle.style.display = "none";
+      }
+    }
+
+    // Update predictions based on user inputs
+    function updatePredictions() {
+      predictionsContainer.innerHTML = "";
+      
+      if (selectedSymptoms.size === 0) {
+        resultInfo.style.display = "block";
+        resultInfo.innerText = "Please search or click on symptoms to begin prediction.";
+        emergencyBanner.style.display = "none";
+        return;
+      }
+
+      resultInfo.style.display = "none";
+      
+      // Check for severity warnings
+      let hasSevereSymptom = false;
+      selectedSymptoms.forEach(sym => {
+        if (SEVERE_SYMPTOMS.includes(sym)) {
+          hasSevereSymptom = true;
+        }
+      });
+
+      if (hasSevereSymptom) {
+        emergencyBanner.style.display = "block";
+      } else {
+        emergencyBanner.style.display = "none";
+      }
+
+      // Calculate matching scores
+      const matchedDiseases = [];
+
+      diseases.forEach(disease => {
+        const matches = disease.symptoms.filter(sym => selectedSymptoms.has(sym));
+        if (matches.length > 0) {
+          const score = (matches.length / disease.symptoms.length) * 100;
+          const remaining = disease.symptoms.filter(sym => !selectedSymptoms.has(sym));
+          matchedDiseases.push({
+            name: disease.name,
+            probability: score,
+            matchedList: matches,
+            remainingList: remaining
+          });
+        }
+      });
+
+      // Sort by highest probability first
+      matchedDiseases.sort((a, b) => b.probability - a.probability);
+
+      if (matchedDiseases.length === 0) {
+        predictionsContainer.innerHTML = `
+          <div class="text-center py-4 bg-light rounded-3 border">
+            <i class="bi bi-patch-question text-muted" style="font-size: 2rem;"></i>
+            <p class="mb-0 mt-2 text-muted fw-semibold">No conditions match your exact symptoms. Try adjusting your selections.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Render disease result cards
+      matchedDiseases.forEach(item => {
+        const prob = item.probability;
+        let riskClass = "low-risk";
+        let barClass = "low";
+        let riskLabel = "Low Match";
+
+        if (prob >= 60) {
+          riskClass = "high-risk";
+          barClass = "high";
+          riskLabel = "High Match";
+        } else if (prob >= 30) {
+          riskClass = "medium-risk";
+          barClass = "medium";
+          riskLabel = "Moderate Match";
+        }
+
+        const card = document.createElement("div");
+        card.className = `result-card ${riskClass} fade-in`;
+        
+        let matchesHtml = item.matchedList.map(sym => `<span class="symptom-tag-pill matched"><i class="bi bi-check2"></i> ${sym}</span>`).join("");
+        let remainingHtml = item.remainingList.map(sym => `<span class="symptom-tag-pill unmatched">${sym}</span>`).join("");
+
+        let recommendation = "Monitor symptoms, stay hydrated, and rest.";
+        if (prob >= 60) {
+          recommendation = "Highly recommend consulting a physician or specialist for a proper examination.";
+        } else if (prob >= 30) {
+          recommendation = "If symptoms persist or worsen over the next 48 hours, seek medical advice.";
+        }
+
+        card.innerHTML = `
+          <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+            <div>
+              <h5 class="fw-bold text-dark mb-1">${item.name}</h5>
+              <span class="badge ${prob >= 60 ? 'bg-danger-subtle text-danger' : prob >= 30 ? 'bg-warning-subtle text-warning-emphasis' : 'bg-success-subtle text-success'} rounded-pill" style="font-size: 0.8rem; font-weight: 700;">
+                ${riskLabel} (${prob.toFixed(0)}%)
+              </span>
+            </div>
+            <div class="d-flex gap-2">
+              <a href="doctor.html" class="btn btn-sm action-btn action-btn-primary">Find Doctor</a>
+              <a href="medication.html" class="btn btn-sm action-btn action-btn-secondary">Check Meds</a>
+            </div>
+          </div>
+          <div class="my-3">
+            <div class="progress" style="height: 8px; background: rgba(0,0,0,0.05); border-radius: 10px;">
+              <div class="progress-bar progress-bar-custom ${barClass}" role="progressbar" style="width: ${prob}%;" aria-valuenow="${prob}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <div class="small fw-semibold text-muted mb-1">Matched Symptoms:</div>
+            <div>${matchesHtml}</div>
+          </div>
+          ${item.remainingList.length > 0 ? `
+          <div class="mb-3">
+            <div class="small fw-semibold text-muted mb-1">Other Possible Symptoms of this Condition:</div>
+            <div>${remainingHtml}</div>
+          </div>` : ''}
+          <div class="border-top pt-2 mt-2 text-muted" style="font-size: 0.82rem;">
+            <strong>Recommendation:</strong> ${recommendation}
+          </div>
+        `;
+        predictionsContainer.appendChild(card);
+      });
+    }
+
+    // Input handlers for autocomplete
+    searchInput.addEventListener("input", function() {
+      const val = this.value.trim();
+      suggestionsList.innerHTML = "";
+
+      if (!val) {
+        hideSuggestions();
+        return;
+      }
+
+      // Filter and show closest matches
+      const matches = allSymptoms.filter(sym => 
+        sym.toLowerCase().includes(val.toLowerCase()) && !selectedSymptoms.has(sym)
+      );
+
+      if (matches.length > 0) {
+        matches.forEach(match => {
+          const item = document.createElement("div");
+          item.className = "autocomplete-item";
+          item.innerText = match;
+          item.onclick = function() {
+            addSymptom(match);
+          };
+          suggestionsList.appendChild(item);
+        });
+        showSuggestions();
+      } else {
+        hideSuggestions();
+      }
+    });
+
+    searchInput.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        const val = this.value.trim();
+        
+        // If there are suggestions, select the first suggestion
+        const firstSuggestion = suggestionsList.querySelector(".autocomplete-item");
+        if (firstSuggestion) {
+          addSymptom(firstSuggestion.innerText);
+        } else {
+          // If no suggestions, use fuzzy search helper to find the closest match
+          const closest = findClosestSymptom(val);
+          if (closest) {
+            addSymptom(closest);
+          } else if (val) {
+            // As fallback, add user's raw text as a custom tag
+            addSymptom(val);
+          }
+        }
+      }
+    });
+
+    function showSuggestions() {
+      suggestionsList.style.display = "block";
+    }
+
+    function hideSuggestions() {
+      suggestionsList.style.display = "none";
+    }
+
+    // Close suggestions dropdown when clicking outside
+    document.addEventListener("click", function(e) {
+      if (e.target !== searchInput && e.target !== suggestionsList) {
+        hideSuggestions();
+      }
+    });
+
+    // Navbar Auth check
+    (function() {
+      const token = localStorage.getItem('mc_token');
+      const name = localStorage.getItem('mc_name');
+      const authSection = document.getElementById('nav-auth-section');
+      if (token && name && authSection) {
+        authSection.innerHTML = `
+          <span class="text-white me-2 align-self-center fw-semibold">Hello, ${name}</span>
+          <button id="logout-btn" class="btn btn-outline-danger btn-sm px-3 py-2" style="border-radius: 8px;">Logout</button>
+        `;
+        document.getElementById('logout-btn').addEventListener('click', (e) => {
+          e.preventDefault();
+          localStorage.removeItem('mc_token');
+          localStorage.removeItem('mc_name');
+          window.location.reload();
+        });
+      }
+    })();
+  </script>
+</body>
+
+</html>
