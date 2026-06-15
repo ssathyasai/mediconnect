@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediConnect – Sign Up</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@800&display=swap" rel="stylesheet" />
+    <style>
+      body {
+        background-image: url(../assets/images/auth/signup-bg.jpg);
+        box-sizing: border-box;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        margin: 0;
+      }
+      .container { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+      form {
+        background: #8DDFCB;
+        display: flex;
+        flex-direction: column;
+        padding: 2rem 3rem;
+        width: 90%;
+        max-width: 480px;
+        border-radius: 10px;
+      }
+      form input {
+        border: 0; margin: 10px 0; padding: 14px 16px; outline: none;
+        background: #fff0f5; font-size: 16px; border-radius: 5px;
+      }
+      #ff { font-size: 30px; text-align: center; font-family: "Cinzel", serif; margin-bottom: 8px; }
+      form button {
+        padding: 14px; background: #ff5361; color: #fff0f5; font-size: 18px;
+        border: 0; cursor: pointer; width: 150px; margin: 20px auto 0; border-radius: 30px;
+      }
+      form button:hover { background: #e04050; }
+      .form-link { text-align: center; margin-top: 12px; }
+      .form-link a { color: #04364a; font-weight: 600; }
+      #error-msg { color: #c0392b; text-align: center; font-weight: 600; min-height: 20px; }
+      #success-msg { color: #1a7a40; text-align: center; font-weight: 600; min-height: 20px; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <form id="signup-form">
+        <h1 id="ff">Sign Up</h1>
+        <p id="error-msg"></p>
+        <p id="success-msg"></p>
+        <input type="text" id="firstName" name="firstName" placeholder="First Name" required />
+        <input type="text" id="lastName" name="lastName" placeholder="Last Name" required />
+        <input type="email" id="email" name="email" placeholder="Email address" required />
+        <input type="password" id="password" name="password" placeholder="Password (min 6 chars)" required />
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm password" required />
+        <button type="submit">Create Account</button>
+        <p class="form-link">Already have an account? <a href="login.html">Login</a></p>
+        <p class="form-link"><a href="../index.html">← Back to Home</a></p>
+      </form>
+    </div>
+
+    <script>
+      document.getElementById('signup-form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const errorEl   = document.getElementById('error-msg');
+        const successEl = document.getElementById('success-msg');
+        errorEl.textContent   = '';
+        successEl.textContent = '';
+
+        const payload = {
+          firstName:       document.getElementById('firstName').value.trim(),
+          lastName:        document.getElementById('lastName').value.trim(),
+          email:           document.getElementById('email').value.trim(),
+          password:        document.getElementById('password').value,
+          confirmPassword: document.getElementById('confirmPassword').value
+        };
+
+        try {
+          const res = await fetch('/api/auth/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            errorEl.textContent = data.error || 'Signup failed.';
+            return;
+          }
+
+          // Store the JWT token in localStorage
+          localStorage.setItem('mc_token', data.token);
+          localStorage.setItem('mc_name', data.name);
+
+          successEl.textContent = `Welcome, ${data.name}! Redirecting…`;
+          setTimeout(() => { window.location.href = '../index.html'; }, 1200);
+        } catch (err) {
+          errorEl.textContent = 'Network error. Is the server running?';
+        }
+      });
+    </script>
+  </body>
+</html>
