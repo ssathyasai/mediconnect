@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediConnect – Health Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+  <style>
+    body { background-color: #b6fffa; }
+    #nav { background-color: #04364a !important; }
+    .health-widget {
+      width: 18rem; margin-bottom: 20px; border: 1px solid #ccc;
+      border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); background-color: #d2e0fb;
+    }
+    #auth-banner { background: #fff3cd; border: 1px solid #ffc107; border-radius: 6px; padding: 10px 16px; margin: 12px 0; }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg bg-body-tertiary nav-underline" id="nav">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="../index.html" style="color: #b6fffa">MediConnect</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="../index.html" style="color: #b6fffa">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="about.html" style="color: #b6fffa">About Us</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #b6fffa">Emergency</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="emergency.html">Emergency Services</a></li>
+              <li><a class="dropdown-item" href="doctor.html">Find a Doctor</a></li>
+              <li><hr class="dropdown-divider" /></li>
+              <li><a class="dropdown-item" href="about.html">Contact Us</a></li>
+            </ul>
+          </li>
+        </ul>
+        <div class="d-flex gap-2" id="nav-auth-section">
+          <a href="login.html" class="btn btn-outline-light btn-sm px-3 py-2" style="border-radius: 8px;">Login</a>
+          <a href="signup.html" class="btn btn-success btn-sm px-3 py-2" style="border-radius: 8px;">SignUp</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    <h1 class="text-center mb-3" style="color: #04364a;">Health Dashboard</h1>
+    <div id="auth-banner" style="display:none;">
+      ⚠️ You are not logged in. Data will not be saved. <a href="login.html">Login</a> or <a href="signup.html">Sign Up</a>.
+    </div>
+
+    <form id="trackingForm">
+      <div class="mb-3">
+        <label for="weight" class="form-label">Weight (kg):</label>
+        <input type="number" step="0.1" class="form-control" id="weight" placeholder="Enter weight" required>
+      </div>
+      <div class="mb-3">
+        <label for="bloodPressure" class="form-label">Blood Pressure (e.g. 120/80):</label>
+        <input type="text" class="form-control" id="bloodPressure" placeholder="Enter blood pressure" required>
+      </div>
+      <div class="mb-3">
+        <label for="heartRate" class="form-label">Heart Rate (bpm):</label>
+        <input type="number" class="form-control" id="heartRate" placeholder="Enter heart rate" required>
+      </div>
+      <div class="mb-3">
+        <label for="sleepHours" class="form-label">Sleep (hours):</label>
+        <input type="text" class="form-control" id="sleepHours" placeholder="e.g. 7.5" required>
+      </div>
+      <button type="button" class="btn btn-primary" onclick="trackHealthData()">Save Entry</button>
+    </form>
+  </div>
+
+  <!-- Summary widgets -->
+  <div class="container mt-4 d-flex flex-wrap justify-content-around">
+    <div class="card health-widget"><div class="card-body"><h5 class="card-title">Weight</h5><p class="card-text">Latest: <span id="weightValue">N/A</span> kg</p></div></div>
+    <div class="card health-widget"><div class="card-body"><h5 class="card-title">Blood Pressure</h5><p class="card-text">Latest: <span id="bloodPressureValue">N/A</span></p></div></div>
+    <div class="card health-widget"><div class="card-body"><h5 class="card-title">Heart Rate</h5><p class="card-text">Latest: <span id="heartRateValue">N/A</span> BPM</p></div></div>
+    <div class="card health-widget"><div class="card-body"><h5 class="card-title">Sleep</h5><p class="card-text">Latest: <span id="sleepValue">N/A</span> hrs</p></div></div>
+  </div>
+
+  <!-- History table -->
+  <div class="container mt-4">
+    <h4>History</h4>
+    <table class="table table-striped">
+      <thead><tr><th>#</th><th>Weight (kg)</th><th>Blood Pressure</th><th>Heart Rate (BPM)</th><th>Sleep (hrs)</th><th>Recorded At</th><th></th></tr></thead>
+      <tbody id="healthTableBody"></tbody>
+    </table>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+
+  <script>
+    let isLoggedIn = false;
+
+    function authHeaders() {
+      const token = localStorage.getItem('mc_token');
+      return token
+        ? { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+        : { 'Content-Type': 'application/json' };
+    }
+
+    // Check login status on load
+    async function init() {
+      const token = localStorage.getItem('mc_token');
+      if (token) {
+        isLoggedIn = true;
+        loadRecords();
+      } else {
+        document.getElementById('auth-banner').style.display = 'block';
+      }
+    }
+
+    async function loadRecords() {
+      const res = await fetch('/api/health', { headers: authHeaders() });
+      if (!res.ok) return;
+      const records = await res.json();
+      renderTable(records);
+      if (records.length > 0) updateWidgets(records[0]);
+    }
+
+    function updateWidgets(r) {
+      document.getElementById('weightValue').textContent        = r.weightKg       ?? 'N/A';
+      document.getElementById('bloodPressureValue').textContent = r.bloodPressure  ?? 'N/A';
+      document.getElementById('heartRateValue').textContent     = r.heartRateBpm   ?? 'N/A';
+      document.getElementById('sleepValue').textContent         = r.sleepHours     ?? 'N/A';
+    }
+
+    function renderTable(records) {
+      const tbody = document.getElementById('healthTableBody');
+      tbody.innerHTML = '';
+      records.forEach((r, i) => {
+        const date = new Date(r.createdAt).toLocaleString();
+        tbody.innerHTML += `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${r.weightKg}</td>
+            <td>${r.bloodPressure}</td>
+            <td>${r.heartRateBpm}</td>
+            <td>${r.sleepHours}</td>
+            <td>${date}</td>
+            <td><button class="btn btn-sm btn-danger" onclick="deleteRecord('${r._id}')">Delete</button></td>
+          </tr>`;
+      });
+    }
+
+    async function trackHealthData() {
+      const payload = {
+        weightKg:      parseFloat(document.getElementById('weight').value),
+        bloodPressure: document.getElementById('bloodPressure').value.trim(),
+        heartRateBpm:  parseInt(document.getElementById('heartRate').value),
+        sleepHours:    document.getElementById('sleepHours').value.trim()
+      };
+
+      if (!payload.weightKg || !payload.bloodPressure || !payload.heartRateBpm || !payload.sleepHours) {
+        alert('Please fill in all fields.');
+        return;
+      }
+
+      if (!isLoggedIn) {
+        updateWidgets(payload);
+        alert('Not logged in – data shown but not saved.');
+        return;
+      }
+
+      const res = await fetch('/api/health', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        document.getElementById('trackingForm').reset();
+        loadRecords();
+      } else {
+        const err = await res.json();
+        alert(err.error || 'Failed to save.');
+      }
+    }
+
+    async function deleteRecord(id) {
+      if (!confirm('Delete this record?')) return;
+      await fetch(`/api/health/${id}`, { method: 'DELETE', headers: authHeaders() });
+      loadRecords();
+    }
+
+    init();
+
+    // Navbar Auth check
+    (function() {
+      const token = localStorage.getItem('mc_token');
+      const name = localStorage.getItem('mc_name');
+      const authSection = document.getElementById('nav-auth-section');
+      if (token && name && authSection) {
+        authSection.innerHTML = `
+          <span class="text-white me-2 align-self-center fw-semibold">Hello, ${name}</span>
+          <button id="logout-btn" class="btn btn-outline-danger btn-sm px-3 py-2" style="border-radius: 8px;">Logout</button>
+        `;
+        document.getElementById('logout-btn').addEventListener('click', (e) => {
+          e.preventDefault();
+          localStorage.removeItem('mc_token');
+          localStorage.removeItem('mc_name');
+          window.location.reload();
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
