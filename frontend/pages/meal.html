@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediConnect – Meal Planning</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+  <style>
+    body {
+      background-color: #b6fffa;
+    }
+
+    #nav {
+      background-color: #04364a !important;
+    }
+
+    h1 {
+      font-family: "Cabin", sans-serif;
+      text-align: center;
+      color: #04364a;
+    }
+
+    h3 {
+      font-family: 'Anton', sans-serif;
+      font-size: 2.5rem;
+      text-align: center;
+      font-weight: 800;
+      color: #363062;
+    }
+
+    .paddin {
+      padding: 10px !important;
+      justify-content: space-evenly;
+    }
+
+    #trans1 {
+      transition: transform 0.3s !important;
+      background-color: #d2e0fb !important;
+    }
+
+    #trans1:hover {
+      transform: scale(1.1) !important;
+    }
+
+    #trans2 {
+      transition: transform 0.3s !important;
+      background-color: #d2e0fb !important;
+    }
+
+    #trans2:hover {
+      transform: scale(1.1) !important;
+    }
+
+    #trans3 {
+      transition: transform 0.3s !important;
+      background-color: #d2e0fb !important;
+    }
+
+    #trans3:hover {
+      transform: scale(1.1) !important;
+    }
+
+    #trans4 {
+      transition: transform 0.3s !important;
+      background-color: #d2e0fb !important;
+    }
+
+    #trans4:hover {
+      transform: scale(1.1) !important;
+    }
+
+    #trans5 {
+      transition: transform 0.3s !important;
+      background-color: #d2e0fb !important;
+    }
+
+    #trans5:hover {
+      transform: scale(1.1) !important;
+    }
+
+    #trans6 {
+      transition: transform 0.3s !important;
+      background-color: #d2e0fb !important;
+    }
+
+    #trans6:hover {
+      transform: scale(1.1) !important;
+    }
+
+    #trans7 {
+      transition: transform 0.3s !important;
+      background-color: #d2e0fb !important;
+    }
+
+    #trans7:hover {
+      transform: scale(1.1) !important;
+    }
+
+    #trans8 {
+      transition: transform 0.3s !important;
+      background-color: #d2e0fb !important;
+    }
+
+    #trans8:hover {
+      transform: scale(1.1) !important;
+    }
+
+    .pp {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 400;
+    }
+
+    #h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 50px ;
+    }
+
+    #pa {
+      display: inline-block;
+      color: #7D7C7C;
+      font-family: 'Dancing Script', cursive;
+      font-weight: 600;
+      font-size: 20px;
+    }
+
+    header {
+      padding: 15px;
+      text-align: center;
+    }
+
+    #meal-container {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #d2e0fb;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 5px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin-bottom: 5px;
+    }
+
+    input {
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 10px 15px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    table {
+      width: 80%;
+      margin: 20px auto;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 15px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #333;
+      color: #fff;
+    }
+
+    td {
+      background-color: #fff;
+    }
+    .indian-food {
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .normal-bmi {
+      background-color: #aaffaa; /* Light green for normal BMI */
+    }
+
+    .overweight-bmi {
+      background-color: #ffaaaa; /* Light red for overweight BMI */
+    }
+
+    .underweight-bmi {
+      background-color: #aaaaff; /* Light blue for underweight BMI */
+    }
+
+    .obese-bmi {
+      background-color: #ff6666; /* Light orange for obese BMI */
+    }
+
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Cabin:wght@600&family=Cinzel:wght@800&family=Dancing+Script&family=Gabarito&family=Inconsolata&family=Libre+Baskerville:wght@700&family=Nosifer&family=Nunito:wght@300&family=Ubuntu:wght@500&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary nav-underline" id="nav">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="../index.html" style="color: #b6fffa">MediConnect</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="../index.html" style="color: #b6fffa">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="about.html" style="color: #b6fffa">About Us</a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+                  style="color: #b6fffa">Emergency</a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="emergency.html">Emergency Services</a></li>
+                  <li><a class="dropdown-item" href="doctor.html">Find a Doctor</a></li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li><a class="dropdown-item" href="about.html">Contact Us</a></li>
+                </ul>
+              </li>
+            </ul>
+            <div class="d-flex gap-2" id="nav-auth-section">
+              <a href="login.html" class="btn btn-outline-light btn-sm px-3 py-2" style="border-radius: 8px;">Login</a>
+              <a href="signup.html" class="btn btn-success btn-sm px-3 py-2" style="border-radius: 8px;">SignUp</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+  <header>
+    <h1>Nutritional Meal Planning</h1>
+  </header>
+
+  <div id="meal-container">
+    <form id="bmi-form">
+      <label for="weight">Weight (kg):</label>
+      <input type="number" id="weight" placeholder="Enter your weight" required>
+
+      <label for="height">Height (cm):</label>
+      <input type="number" id="height" placeholder="Enter your height" required>
+
+      <button type="button" onclick="calculateBMI()">Calculate BMI</button>
+    </form>
+
+    <div id="result"></div>
+  </div>
+
+  <div id="meal-plan-container"></div>
+
+  <script>
+     const bmiData = {
+      normal: 'Normal weight',
+      overweight: 'Overweight',
+      underweight: 'Underweight',
+      obese: 'Obese',
+    };
+
+    const mealData = {
+      normal: {
+        Monday: ['Brown Rice Khichdi', 'Grilled Chicken', 'Mixed Vegetables'],
+        Tuesday: ['Quinoa Salad', 'Baked Fish', 'Stir-fried Tofu'],
+        Wednesday: ['Oats Upma', 'Chickpea Curry', 'Whole Wheat Roti'],
+        Thursday: ['Veggie Omelette', ' Lentil Soup', 'Cauliflower Rice'],
+        Friday: ['Fruit Smoothie Bowl', 'Turkey Wrap', 'Vegetarian Stir-Fry'],
+        Saturday: ['Greek Yogurt Parfait', 'Pasta Primavera', 'Grilled Shrimp'],
+        Sunday: ['Avocado Toast', 'Vegetable Wrap', 'Salmon Fillet'],
+      },
+      overweight: {
+        Monday: ['Quinoa Pulao', 'Grilled Chicken Salad', 'Steamed Broccoli'],
+        Tuesday: ['Sweet Potato Chaat', 'Baked Fish Tacos', 'Cucumber Raita'],
+        Wednesday: ['Brown Rice Poha', 'Chickpea Salad', 'Multigrain Roti'],
+        Thursday: ['Egg White Omelette', ' Lentil and Vegetable Soup', 'Quinoa Roti'],
+        Friday: ['Mixed Berry Smoothie', 'Turkey Lettuce Wrap', 'Vegetable Stir-Fry'],
+        Saturday: ['Low-Fat Greek Yogurt', 'Vegetable Quinoa Bowl', 'Grilled Chicken Breast'],
+        Sunday: ['Whole Wheat Paratha', 'Palak Chicken', 'Mixed Berry Lassi'],
+      },
+      underweight: {
+        Monday: ['Masoor Dal Khichdi', 'Chicken Curry', 'Mixed Sprouts Salad'],
+        Tuesday: ['Ragi Dosa', 'Paneer Bhurji', 'Whole Wheat Chapati'],
+        Wednesday: ['Moong Dal Chilla', 'Veggie Wrap', 'Sweet Potato Wedges'],
+        Thursday: ['Banana Walnut Smoothie', 'Chickpea Salad Wrap', 'Peanut Butter Sandwich'],
+        Friday: ['Hummus and Veggie Sandwich', 'Dal Tadka', 'Brown Rice'],
+        Saturday: ['Cottage Cheese Salad', 'Quinoa Khichdi', 'Almond Milkshake'],
+        Sunday: ['Potato and Peas Paratha', 'Boiled Egg Bhurji', 'Mango Lassi'],
+      },
+      obese: {
+        Monday: ['Cauliflower Rice Pulao', 'Grilled Turkey Burger', 'Stir-fried Brussels Sprouts'],
+        Tuesday: ['Kale Salad with Grilled Chicken', 'Baked Salmon', 'Zucchini Noodles'],
+        Wednesday: ['Vegan Lentil Soup', 'Cauliflower Steak', 'Multigrain Roti'],
+        Thursday: ['Eggplant and Chickpea Stew', 'Turkey Lettuce Wraps', 'Broccoli Rice'],
+        Friday: ['Detox Green Smoothie', 'Vegetarian Quinoa Stir-Fry', 'Grilled Turkey Breast'],
+        Saturday: ['Chia Seed Pudding with Berries', 'Roasted Vegetable Quinoa Bowl', 'Grilled Chicken Breast'],
+        Sunday: ['Whole Wheat Veggie Wrap', 'Baked Cod Fish', 'Mixed Berry Smoothie'],
+      },
+    };
+
+    window.onload = function () {
+      generateMealPlan();
+    };
+
+    function calculateBMI() {
+        const weight = parseFloat(document.getElementById('weight').value);
+      const height = parseFloat(document.getElementById('height').value);
+
+      if (isNaN(weight) || isNaN(height) || height <= 0 || weight <= 0) {
+        alert('Please enter valid values for weight and height.');
+        return;
+      }
+
+      const bmi = weight / ((height / 100) * (height / 100));
+      let bmiCategory;
+
+      if (bmi < 18.5) {
+        bmiCategory = 'underweight';
+      } else if (bmi < 24.9) {
+        bmiCategory = 'normal';
+      } else if (bmi < 29.9) {
+        bmiCategory = 'overweight';
+      } else {
+        bmiCategory = 'obese';
+      }
+
+      document.getElementById('result').innerHTML = `Your BMI: ${bmi.toFixed(2)} - ${bmiData[bmiCategory]}`;
+      updateMealPlan(bmiCategory);
+    }
+
+    function updateMealPlan(bmiCategory) {
+        const mealPlanContainer = document.getElementById('meal-plan-container');
+      mealPlanContainer.innerHTML = ''; // Clear previous content
+
+      generateMealPlan(bmiCategory);
+    }
+
+    function generateMealPlan(bmiCategory) {
+        const table = document.createElement('table');
+  const daysOfWeek = ['Days', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+  // Create header row
+  const headerRow = table.insertRow(0);
+  for (let day of daysOfWeek) {
+    const th = document.createElement('th');
+    th.textContent = day;
+    headerRow.appendChild(th);
+  }
+
+  // Create rows for each meal
+  const meals = ['Breakfast', 'Lunch', 'Dinner'];
+  for (let meal of meals) {
+    const row = table.insertRow();
+    row.insertCell().textContent = meal; // Meal type column
+
+    for (let day of daysOfWeek.slice(1)) { // Start from the second element
+      const cell = row.insertCell();
+      const mealList = mealData[bmiCategory] && mealData[bmiCategory][day] ? mealData[bmiCategory][day] : [];
+      cell.textContent = mealList[meals.indexOf(meal)] || 'N/A';
+
+      // Apply BMI-specific class to the cell
+      if (bmiCategory) {
+        cell.classList.add(`${bmiCategory}-bmi`);
+      }
+    }
+  }
+
+  document.getElementById('meal-plan-container').appendChild(table);}
+
+  // Navbar Auth check
+  (function() {
+    const token = localStorage.getItem('mc_token');
+    const name = localStorage.getItem('mc_name');
+    const authSection = document.getElementById('nav-auth-section');
+    if (token && name && authSection) {
+      authSection.innerHTML = `
+        <span class="text-white me-2 align-self-center fw-semibold">Hello, ${name}</span>
+        <button id="logout-btn" class="btn btn-outline-danger btn-sm px-3 py-2" style="border-radius: 8px;">Logout</button>
+      `;
+      document.getElementById('logout-btn').addEventListener('click', (e) => {
+        e.preventDefault();
+        localStorage.removeItem('mc_token');
+        localStorage.removeItem('mc_name');
+        window.location.reload();
+      });
+    }
+  })();
+  </script>
+</body>
+
+</html>
+
