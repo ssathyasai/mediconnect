@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediConnect – Mental Health Hub</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --primary-color: #04364a;
+      --accent-color: #17b890;
+      --warning-color: #ff5e62;
+      --bg-gradient: linear-gradient(135deg, #e0f9f8 0%, #cfdaf5 100%);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      color: #333;
+      padding-bottom: 50px;
+    }
+
+    #nav {
+      background-color: var(--primary-color) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 24px;
+      box-shadow: 0 15px 35px rgba(4, 54, 74, 0.06);
+      padding: 2.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .section-title {
+      font-weight: 800;
+      color: var(--primary-color);
+    }
+
+    /* Quiz Styling */
+    .quiz-container-box {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .progress-bar-container {
+      background: rgba(4, 54, 74, 0.08);
+      height: 8px;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+
+    .progress-bar-fill {
+      background: var(--accent-color);
+      height: 100%;
+      width: 0%;
+      border-radius: 10px;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .question-text {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+      line-height: 1.4;
+    }
+
+    .option-card {
+      background: white;
+      border: 2px solid rgba(4, 54, 74, 0.12);
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .option-card:hover {
+      border-color: var(--primary-color);
+      background: rgba(4, 54, 74, 0.02);
+      transform: translateY(-1px);
+    }
+
+    .option-card.selected {
+      border-color: var(--accent-color);
+      background: rgba(23, 184, 144, 0.06);
+      box-shadow: 0 4px 12px rgba(23, 184, 144, 0.1);
+    }
+
+    .option-card.selected .check-circle-icon {
+      color: var(--accent-color);
+      background-color: rgba(23, 184, 144, 0.12);
+    }
+
+    .check-circle-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      color: transparent;
+      transition: all 0.2s;
+    }
+
+    .option-card.selected .check-circle-icon {
+      border-color: var(--accent-color);
+      color: var(--accent-color);
+    }
+
+    .option-label {
+      font-weight: 600;
+      color: #444;
+      font-size: 1rem;
+    }
+
+    .nav-btn {
+      font-weight: 700;
+      border-radius: 12px;
+      padding: 10px 24px;
+      transition: all 0.2s;
+    }
+
+    /* Result score section */
+    .result-score-ring {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(4, 54, 74, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary-color);
+      border: 4px solid var(--primary-color);
+      margin: 0 auto 1.5rem;
+    }
+
+    .result-score-ring.low {
+      border-color: var(--accent-color);
+      color: var(--accent-color);
+    }
+
+    .result-score-ring.medium {
+      border-color: #ffa600;
+      color: #ffa600;
+    }
+
+    .result-score-ring.high {
+      border-color: var(--warning-color);
+      color: var(--warning-color);
+    }
+
+    /* Testimonials section */
+    .testimonial-card {
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 20px;
+      padding: 1.75rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+      transition: all 0.3s ease;
+    }
+
+    .testimonial-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(4, 54, 74, 0.06);
+      background: rgba(255, 255, 255, 0.85);
+    }
+
+    .quote-text {
+      font-style: italic;
+      color: #555;
+      position: relative;
+    }
+
+    .quote-text::before {
+      content: '"';
+      font-size: 2.5rem;
+      color: rgba(4, 54, 74, 0.1);
+      position: absolute;
+      left: -12px;
+      top: -15px;
+      font-family: serif;
+    }
+
+    .user-avatar {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border: 3px solid white;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg bg-body-tertiary nav-underline" id="nav">
+    <div class="container-fluid">
+      <a class="navbar-brand text-decoration-none" href="../index.html" style="color: #b6fffa; font-weight: 700;">MediConnect</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="../index.html" style="color: #b6fffa">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="about.html" style="color: #b6fffa">About Us</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+              style="color: #b6fffa">Emergency</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="emergency.html">Emergency Services</a></li>
+              <li><a class="dropdown-item" href="doctor.html">Find a Doctor</a></li>
+              <li><hr class="dropdown-divider" /></li>
+              <li><a class="dropdown-item" href="about.html">Contact Us</a></li>
+            </ul>
+          </li>
+        </ul>
+        <div class="d-flex gap-2" id="nav-auth-section">
+          <a href="login.html" class="btn btn-outline-light btn-sm px-3 py-2" style="border-radius: 8px;">Login</a>
+          <a href="signup.html" class="btn btn-success btn-sm px-3 py-2" style="border-radius: 8px;">SignUp</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container py-5">
+    
+    <!-- Welcome Section -->
+    <div class="glass-card mb-5">
+      <div class="row align-items-center">
+        <div class="col-lg-8">
+          <h2 class="section-title mb-3">Welcome to Your Mental Health Hub</h2>
+          <p class="lead text-muted mb-4">Your source for information, support, and wellness.</p>
+          <p class="text-muted" style="line-height: 1.7; font-size: 0.95rem;">
+            Your Mental Health Hub is a compassionate and informative space dedicated to supporting your well-being. We understand that mental health is an integral part of overall health, and our goal is to provide resources and assistance to help you navigate your journey towards mental well-being.
+            Explore a wealth of information on various mental health conditions, their symptoms, and evidence-based treatments. Our team is committed to delivering content that is not only educational but also empathetic and supportive.
+          </p>
+          <p class="text-muted" style="line-height: 1.7; font-size: 0.95rem;">
+            Whether you're seeking information for yourself or a loved one, we strive to create a community that fosters understanding and reduces the stigma associated with mental health challenges. You are not alone on this journey, and we are here to offer guidance, encouragement, and practical tools to help you lead a healthier and happier life.
+          </p>
+        </div>
+        <div class="col-lg-4 text-center d-none d-lg-block">
+          <div class="bg-success bg-opacity-10 p-4 rounded-circle d-inline-block">
+            <i class="bi bi-emoji-smile text-success" style="font-size: 6rem;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz Section -->
+    <div class="quiz-container-box">
+      <div class="glass-card mb-5">
+        <h2 class="text-center section-title mb-4">Mental Health Self-Assessment</h2>
+        
+        <!-- INTRO SCREEN -->
+        <div id="intro-screen" class="text-center">
+          <p class="text-muted fs-6 mb-4">
+            This quick diagnostic quiz is designed to help you assess your overall mental wellness. Answer 19 questions honestly regarding your feelings over the past 2 weeks to get a customized health breakdown and recommended next steps.
+          </p>
+          <div class="p-3 mb-4 bg-light rounded-3 text-muted text-start" style="font-size: 0.85rem;">
+            <i class="bi bi-shield-check text-success me-1"></i> <strong>Privacy Guarantee:</strong> Your assessment answers are completely private, processed inside your browser, and never stored on any server.
+          </div>
+          <button id="start-quiz-btn" class="btn btn-success px-4 py-2 fw-bold" style="border-radius: 12px; font-size: 1.1rem;">
+            Start Quiz Assessment <i class="bi bi-arrow-right-short"></i>
+          </button>
+        </div>
+
+        <!-- ASSESSMENT SCREEN -->
+        <div id="assessment-screen" style="display: none;">
+          <!-- Progress bar -->
+          <div class="d-flex justify-content-between text-muted small mb-2 fw-semibold">
+            <span id="question-index-label">Question 1 of 19</span>
+            <span id="progress-percentage-label">0% Complete</span>
+          </div>
+          <div class="progress-bar-container">
+            <div id="progress-bar-fill" class="progress-bar-fill"></div>
+          </div>
+
+          <!-- Question area -->
+          <div id="question-box">
+            <div id="question-text" class="question-text">Loading question...</div>
+            <div id="options-box" class="d-flex flex-column">
+              <!-- Dynamically populated option cards -->
+            </div>
+          </div>
+
+          <!-- Navigation Footer -->
+          <div class="d-flex justify-content-between mt-4 border-top pt-3">
+            <button id="prev-btn" class="btn btn-outline-secondary nav-btn d-none">
+              <i class="bi bi-chevron-left"></i> Back
+            </button>
+            <div></div> <!-- Spacer -->
+            <button id="next-btn" class="btn btn-success nav-btn" disabled>
+              Next <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- RESULTS SCREEN -->
+        <div id="result-screen" style="display: none;" class="text-center">
+          <div id="result-badge-container">
+            <div id="result-ring" class="result-score-ring">24</div>
+          </div>
+          <h3 id="result-header" class="fw-bold mb-3 text-dark">Your Score Analysis</h3>
+          <p id="result-message" class="text-muted fs-5 px-md-4 mb-4"></p>
+          
+          <div class="p-4 bg-light rounded-4 text-start mb-4 border">
+            <h5 class="fw-bold text-dark mb-2"><i class="bi bi-lightbulb-fill text-warning me-1"></i> Recommended Steps:</h5>
+            <p id="resources-message" class="text-muted mb-0" style="line-height: 1.6;"></p>
+          </div>
+
+          <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a href="doctor.html" class="btn btn-primary px-4 py-2 fw-bold" style="border-radius: 10px;">
+              <i class="bi bi-telephone-outbound me-1"></i> Consult a Doctor
+            </a>
+            <a href="community.html" class="btn btn-outline-dark px-4 py-2 fw-bold" style="border-radius: 10px;">
+              <i class="bi bi-people-fill me-1"></i> Visit Community Hub
+            </a>
+            <button id="retake-quiz-btn" class="btn btn-link link-secondary fw-semibold">
+              Retake Assessment
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Personal Stories Section -->
+    <div class="testimonial-section pt-4">
+      <h2 class="text-center section-title mb-3">Personal Stories and Testimonials</h2>
+      <p class="text-center text-muted mb-5 px-md-5">Discover the inspiring journeys of individuals who faced mental health challenges, sought support, and built resilience. Their stories help eliminate stigma and remind us that we are never alone.</p>
+      
+      <div class="row g-4">
+        <!-- Card 1 -->
+        <div class="col-md-4">
+          <div class="testimonial-card h-100 d-flex flex-column justify-content-between">
+            <div>
+              <div class="quote-text mb-4">Reaching out for help was the hardest, but most rewarding, decision I ever made. Today, I am living proof that with the right support and determination, you can overcome any obstacle.</div>
+            </div>
+            <div class="d-flex align-items-center gap-3 border-top pt-3">
+              <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=150&auto=format&fit=crop" alt="Sarah" class="rounded-circle user-avatar">
+              <div>
+                <h6 class="fw-bold mb-1 text-dark">Sarah Jenkins</h6>
+                <small class="text-muted">Overcame Depression & Anxiety</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="col-md-4">
+          <div class="testimonial-card h-100 d-flex flex-column justify-content-between">
+            <div>
+              <div class="quote-text mb-4">Sharing my story is my way of letting others know that they are not alone. Mental health is a journey, and each step forward is a victory worth celebrating.</div>
+            </div>
+            <div class="d-flex align-items-center gap-3 border-top pt-3">
+              <img src="https://images.unsplash.com/photo-1500048993953-d23a436266cf?q=80&w=150&auto=format&fit=crop" alt="John" class="rounded-circle user-avatar">
+              <div>
+                <h6 class="fw-bold mb-1 text-dark">John Miller</h6>
+                <small class="text-muted">Living with Bipolar Disorder</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="col-md-4">
+          <div class="testimonial-card h-100 d-flex flex-column justify-content-between">
+            <div>
+              <div class="quote-text mb-4">Accepting my vulnerabilities was the turning point. Today, I am living authentically, and my mental health journey has become a source of internal strength.</div>
+            </div>
+            <div class="d-flex align-items-center gap-3 border-top pt-3">
+              <img src="https://images.unsplash.com/photo-1499952127939-9bbf5af6c51c?q=80&w=150&auto=format&fit=crop" alt="Emily" class="rounded-circle user-avatar">
+              <div>
+                <h6 class="fw-bold mb-1 text-dark">Emily Watson</h6>
+                <small class="text-muted">Managed Panic & Social Anxiety</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Quiz Questions Dataset
+    const questions = [
+      "How often do you feel overwhelmed by daily tasks?",
+      "Do you experience changes in appetite or weight?",
+      "How would you rate your quality of sleep?",
+      "Do you often feel fatigued or lacking in energy?",
+      "Have you noticed changes in your concentration or decision-making ability?",
+      "How often do you experience feelings of sadness or hopelessness?",
+      "Do you find less pleasure in activities that you used to enjoy?",
+      "How would you describe your overall mood?",
+      "Have you had thoughts of self-harm or suicide?",
+      "How would you rate your level of stress?",
+      "Do you find it easy to relax and unwind?",
+      "How often do you engage in physical activity?",
+      "How satisfied are you with your personal relationships?",
+      "Do you have a support system in place (friends, family, etc.)?",
+      "How would you rate your work-life balance?",
+      "Do you practice any mindfulness or relaxation techniques?",
+      "How often do you engage in activities that bring you joy?",
+      "Have you experienced a traumatic event recently?",
+      "How would you rate your self-esteem?"
+    ];
+
+    const options = [
+      { label: "Not at all", score: 0 },
+      { label: "Sometimes", score: 1 },
+      { label: "Often", score: 2 },
+      { label: "Always", score: 3 }
+    ];
+
+    let currentQuestionIdx = 0;
+    const userAnswers = {}; // { questionIdx: score }
+
+    // DOM Elements
+    const introScreen = document.getElementById("intro-screen");
+    const assessmentScreen = document.getElementById("assessment-screen");
+    const resultScreen = document.getElementById("result-screen");
+    
+    const startQuizBtn = document.getElementById("start-quiz-btn");
+    const retakeQuizBtn = document.getElementById("retake-quiz-btn");
+    
+    const questionIndexLabel = document.getElementById("question-index-label");
+    const progressPercentageLabel = document.getElementById("progress-percentage-label");
+    const progressBarFill = document.getElementById("progress-bar-fill");
+    
+    const questionText = document.getElementById("question-text");
+    const optionsBox = document.getElementById("options-box");
+    
+    const prevBtn = document.getElementById("prev-btn");
+    const nextBtn = document.getElementById("next-btn");
+    
+    const resultRing = document.getElementById("result-ring");
+    const resultMessage = document.getElementById("result-message");
+    const resourcesMessage = document.getElementById("resources-message");
+
+    // Event Listeners
+    startQuizBtn.onclick = startAssessment;
+    retakeQuizBtn.onclick = resetAssessment;
+    prevBtn.onclick = handlePrevious;
+    nextBtn.onclick = handleNext;
+
+    function startAssessment() {
+      introScreen.style.display = "none";
+      assessmentScreen.style.display = "block";
+      resultScreen.style.display = "none";
+      currentQuestionIdx = 0;
+      for (let key in userAnswers) delete userAnswers[key];
+      renderQuestion();
+    }
+
+    function resetAssessment() {
+      resultScreen.style.display = "none";
+      startAssessment();
+    }
+
+    function renderQuestion() {
+      // Set progress values
+      const qNum = currentQuestionIdx + 1;
+      const total = questions.length;
+      const percent = Math.round((currentQuestionIdx / total) * 100);
+
+      questionIndexLabel.innerText = `Question ${qNum} of ${total}`;
+      progressPercentageLabel.innerText = `${percent}% Complete`;
+      progressBarFill.style.width = `${percent}%`;
+
+      // Display question text
+      questionText.innerText = `${qNum}. ${questions[currentQuestionIdx]}`;
+
+      // Display option cards
+      optionsBox.innerHTML = "";
+      const savedScore = userAnswers[currentQuestionIdx];
+
+      options.forEach(opt => {
+        const card = document.createElement("div");
+        const isSelected = savedScore === opt.score;
+        card.className = `option-card ${isSelected ? 'selected' : ''}`;
+        card.innerHTML = `
+          <span class="option-label">${opt.label}</span>
+          <div class="check-circle-icon">
+            <i class="bi bi-check-lg"></i>
+          </div>
+        `;
+
+        card.onclick = () => selectOption(opt.score);
+        optionsBox.appendChild(card);
+      });
+
+      // Update Navigation Buttons
+      if (currentQuestionIdx === 0) {
+        prevBtn.classList.add("d-none");
+      } else {
+        prevBtn.classList.remove("d-none");
+      }
+
+      // If answered, enable NEXT button
+      if (savedScore !== undefined) {
+        nextBtn.removeAttribute("disabled");
+        if (currentQuestionIdx === total - 1) {
+          nextBtn.innerHTML = `Submit Assessment <i class="bi bi-send-check"></i>`;
+        } else {
+          nextBtn.innerHTML = `Next <i class="bi bi-chevron-right"></i>`;
+        }
+      } else {
+        nextBtn.setAttribute("disabled", "true");
+        if (currentQuestionIdx === total - 1) {
+          nextBtn.innerHTML = `Submit Assessment <i class="bi bi-send-check"></i>`;
+        } else {
+          nextBtn.innerHTML = `Next <i class="bi bi-chevron-right"></i>`;
+        }
+      }
+    }
+
+    function selectOption(score) {
+      userAnswers[currentQuestionIdx] = score;
+      
+      // Re-render immediately to show active borders
+      renderQuestion();
+
+      // Automatically advance to the next step after a tiny delay for UX flow
+      setTimeout(() => {
+        if (currentQuestionIdx < questions.length - 1) {
+          currentQuestionIdx++;
+          renderQuestion();
+        } else {
+          // If it was the last question, enable submit immediately
+          nextBtn.removeAttribute("disabled");
+        }
+      }, 350);
+    }
+
+    function handlePrevious() {
+      if (currentQuestionIdx > 0) {
+        currentQuestionIdx--;
+        renderQuestion();
+      }
+    }
+
+    function handleNext() {
+      const total = questions.length;
+      if (userAnswers[currentQuestionIdx] === undefined) return;
+
+      if (currentQuestionIdx < total - 1) {
+        currentQuestionIdx++;
+        renderQuestion();
+      } else {
+        submitQuiz();
+      }
+    }
+
+    function submitQuiz() {
+      assessmentScreen.style.display = "none";
+      resultScreen.style.display = "block";
+
+      // Calculate score
+      let totalScore = 0;
+      for (let i = 0; i < questions.length; i++) {
+        totalScore += (userAnswers[i] !== undefined) ? userAnswers[i] : 0;
+      }
+
+      // Max score is 19 * 3 = 57
+      const maxScore = questions.length * 3;
+      resultRing.innerText = `${totalScore}`;
+
+      // Reset classes
+      resultRing.className = "result-score-ring";
+
+      let resultMsg = "";
+      let resourcesMsg = "";
+
+      if (totalScore <= 15) {
+        resultRing.classList.add("low");
+        resultMsg = "Your mental wellness score indicates minimal or low levels of general stress.";
+        resourcesMsg = `
+          <ul>
+            <li><strong>Keep it up:</strong> Your score shows stable well-being. Continue prioritizing sleep, diet, and physical activity.</li>
+            <li><strong>Stay mindful:</strong> Maintain a healthy work-life balance and engage in hobbies that bring you joy.</li>
+            <li><strong>Support others:</strong> Talk openly with friends or colleagues; checking in on others builds empathy and strengthens relationships.</li>
+          </ul>
+        `;
+      } else if (totalScore <= 30) {
+        resultRing.classList.add("medium");
+        resultMsg = "Your score indicates mild to moderate distress or stress levels.";
+        resourcesMsg = `
+          <ul>
+            <li><strong>Incorporate self-care:</strong> Allocate 15-20 minutes daily for relaxation exercises, breathing, or yoga.</li>
+            <li><strong>Set boundaries:</strong> Take micro-breaks from intense work environments or social media overload.</li>
+            <li><strong>Talk about it:</strong> Share how you feel with family members, friends, or trusted support networks.</li>
+            <li><strong>Consult if needed:</strong> If these stressors feel continuous, booking a consultation with a professional can help you navigate this transition.</li>
+          </ul>
+        `;
+      } else {
+        resultRing.classList.add("high");
+        resultMsg = "Your score points to a high level of distress, stress, or emotional pressure.";
+        resourcesMsg = `
+          <ul>
+            <li><strong>Consult a professional:</strong> We highly recommend scheduling an appointment with a psychologist or clinical counselor. They can offer guidance and concrete coping plans.</li>
+            <li><strong>Establish support structures:</strong> Reach out to immediate family, a close friend, or support networks. Do not go through heavy emotional periods alone.</li>
+            <li><strong>Reduce burden:</strong> Delegate urgent tasks where possible. Focus solely on essential recovery routines like sleep, structured meals, and moderate walking.</li>
+            <li><strong>Helplines:</strong> If you are feeling completely overwhelmed or having thoughts of self-harm, please contact national emergency hotlines or local support teams immediately.</li>
+          </ul>
+        `;
+      }
+
+      resultMessage.innerText = resultMsg;
+      resourcesMessage.innerHTML = resourcesMsg;
+    }
+
+    // Navbar Auth check
+    (function() {
+      const token = localStorage.getItem('mc_token');
+      const name = localStorage.getItem('mc_name');
+      const authSection = document.getElementById('nav-auth-section');
+      if (token && name && authSection) {
+        authSection.innerHTML = `
+          <span class="text-white me-2 align-self-center fw-semibold">Hello, ${name}</span>
+          <button id="logout-btn" class="btn btn-outline-danger btn-sm px-3 py-2" style="border-radius: 8px;">Logout</button>
+        `;
+        document.getElementById('logout-btn').addEventListener('click', (e) => {
+          e.preventDefault();
+          localStorage.removeItem('mc_token');
+          localStorage.removeItem('mc_name');
+          window.location.reload();
+        });
+      }
+    })();
+  </script>
+</body>
+
+</html>
